@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Firebase Ultimate Auth</title>
+    <style>
+        :root {
+            --primary: #1976d2;
+            --google: #df4b37;
+            --github: #24292e;
+            --text: #2c3e50;
+            --bg: #f0f2f5;
+        }
+
+        body { 
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; 
+            display: flex; justify-content: center; align-items: center; 
+            min-height: 100vh; background: var(--bg); margin: 0; 
+        }
+
+        .auth-container { 
+            background: white; padding: 2.5rem; border-radius: 16px; 
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08); 
+            width: 100%; max-width: 400px; box-sizing: border-box;
+        }
+
+        h2 { margin: 0 0 1.5rem; color: var(--text); text-align: center; font-weight: 700; }
+
+        input { 
+            width: 100%; padding: 12px 16px; margin: 8px 0; 
+            border: 1px solid #dcdfe6; border-radius: 8px; 
+            box-sizing: border-box; font-size: 15px; outline: none;
+            transition: border-color 0.2s;
+        }
+
+        input:focus { border-color: var(--primary); }
+
+        button { 
+            width: 100%; padding: 12px; border: none; border-radius: 8px; 
+            cursor: pointer; font-size: 15px; font-weight: 600; 
+            margin-top: 12px; transition: transform 0.1s, opacity 0.2s; 
+        }
+
+        button:active { transform: scale(0.98); }
+
+        .btn-main { background: var(--primary); color: white; }
+        .btn-google { background: var(--google); color: white; margin-top: 20px; }
+        .btn-github { background: var(--github); color: white; }
+
+        .links-container { margin-top: 20px; text-align: center; font-size: 14px; color: #606266; }
+        .link { color: var(--primary); cursor: pointer; text-decoration: none; font-weight: 500; }
+        .link:hover { text-decoration: underline; }
+
+        .divider { 
+            margin: 25px 0; border-top: 1px solid #ebeef5; position: relative; 
+        }
+        .divider::after { 
+            content: 'OR'; position: absolute; top: -10px; left: 50%; 
+            transform: translateX(-50%); background: white; padding: 0 12px; 
+            color: #909399; font-size: 12px; font-weight: 600;
+        }
+
+        #message { 
+            margin-top: 20px; font-size: 14px; text-align: center; 
+            min-height: 1.2em; line-height: 1.4;
+        }
+
+.btn-google {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    width: 100%;
+    padding: 12px;
+    margin-top: 20px;
+
+    font-family: 'Segoe UI', system-ui, sans-serif;
+    font-size: 15px;
+    font-weight: 600;
+    color: #1f1f1f;
+
+    background: #ffffff;
+    border: 1px solid #dadce0;
+    border-radius: 8px;
+    overflow: hidden;
+    cursor: pointer;
+    z-index: 1;
+    transition: color 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+}
+
+.btn-google::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+        135deg,
+        #4285F4 0%,
+        #34A853 25%,
+        #FBBC05 65%,
+        #EA4335 100%
+    );
+    opacity: 0;
+    transition: opacity 0.35s ease;
+    z-index: 0;
+}
+
+.btn-google::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: rgba(255,255,255,0.82);
+    opacity: 0;
+    transition: opacity 0.35s ease;
+    z-index: 0;
+}
+
+.btn-icon, .btn-text, .btn-google img, .btn-google span {
+    position: relative;
+    z-index: 2;
+}
+
+.btn-google:hover::before,
+.btn-google:hover::after {
+    opacity: 1;
+}
+
+.btn-google:hover {
+    color: #1f1f1f;
+    border-color: transparent;
+    box-shadow: 0 2px 10px rgba(66,133,244,0.25), 0 1px 4px rgba(234,67,53,0.15);
+}
+
+.btn-google:active {
+    transform: scale(0.98);
+}
+
+.btn-github {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    width: 100%;
+    padding: 12px;
+    margin-top: 12px;
+    
+    background: #24292e;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 15px;
+    font-weight: 600;
+    
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.btn-github:hover {
+    background: #2c3238;
+    opacity: 0.9;
+}
+
+.btn-icon {
+    height: 1.2rem;
+    width: 1.2rem;
+    object-fit: contain;
+    display: block;
+}
+.Back-btn {
+    display: block; width: 32px; height: auto;
+}
+
+@keyframes backBtnAnim {
+  0%   { transform: scale(1); }
+  100% { transform: scale(1.5); }
+}
+
+.Back-btn:active {
+  animation: backBtnAnim 0.14s ease-in-out; 
+  transform: scale(1.5);
+  filter: brightness(1.3) contrast(1.1);
+}
+
+    </style>
+</head>
+<body>
+    <a href="index.html" style="position: absolute; top: 16px; left: 16px; z-index: 10;">
+        <img src="Images/Back.png" alt="Back" class="Back-btn" />
+    </a>
+<div class="auth-container">
+    <h2 id="auth-title">Welcome Back</h2>
+    
+    <div id="auth-form">
+        <input type="email" id="email" placeholder="Email Address" required>
+        <input type="password" id="password" placeholder="Password" required>
+        <button id="auth-btn" class="btn-main">Sign In</button>
+    </div>
+
+    <div class="links-container">
+        <span id="toggle-wrapper">
+            New here? <span class="link" id="toggle-mode">Create an account</span>
+        </span>
+        <div style="margin-top: 8px;">
+            <span class="link" id="forgot-pw">Forgot password?</span>
+        </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <button id="google-btn" class="btn-google">
+    <img src="Images/googleicon.png" class="btn-icon" alt="Google logo">
+    <span>Continue with Google</span>
+</button>
+
+<button id="github-btn" class="btn-github">
+    <img src="Images/githubicon.png" class="btn-icon" alt="GitHub logo">
+    <span>Continue with GitHub</span>
+</button>
+
+    <div id="message"></div>
+</div>
+
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { 
+        getAuth, 
+        onAuthStateChanged,
+        signInWithEmailAndPassword, 
+        createUserWithEmailAndPassword,
+        sendPasswordResetEmail,
+        signInWithPopup, 
+        GoogleAuthProvider, 
+        GithubAuthProvider 
+    } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+
+    const firebaseConfig = {
+        apiKey: "AIzaSyCQLI6-YVviG3cS0vbmud4oco8oGV01ySg",
+        authDomain: "codecloud-270fe.firebaseapp.com",
+        projectId: "codecloud-270fe",
+        storageBucket: "codecloud-270fe.firebasestorage.app",
+        messagingSenderId: "155488205416",
+        appId: "1:155488205416:web:a029e34bb4a3a1a63bd9dd",
+        measurementId: "G-L7FDMHKVW2"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const googleProvider = new GoogleAuthProvider();
+    const githubProvider = new GithubAuthProvider();
+
+    onAuthStateChanged(auth, (user) => {
+        if (user) {
+            location.href = "console.html";
+        }
+    });
+
+    const emailInput = document.getElementById('email');
+    const passwordInput = document.getElementById('password');
+    const authBtn = document.getElementById('auth-btn');
+    const authTitle = document.getElementById('auth-title');
+    const toggleMode = document.getElementById('toggle-mode');
+    const toggleWrapper = document.getElementById('toggle-wrapper');
+    const forgotPw = document.getElementById('forgot-pw');
+    const messageDiv = document.getElementById('message');
+
+    let isLoginMode = true;
+
+    const showMsg = (txt, col) => {
+        messageDiv.innerText = txt;
+        messageDiv.style.color = col === 'red' ? '#f56c6c' : (col === 'green' ? '#67c23a' : '#e6a23c');
+    };
+
+    toggleMode.addEventListener('click', () => {
+        isLoginMode = !isLoginMode;
+        authTitle.innerText = isLoginMode ? "Welcome Back" : "Join Us";
+        authBtn.innerText = isLoginMode ? "Sign In" : "Register";
+        toggleWrapper.innerHTML = isLoginMode 
+            ? `New here? <span class="link" id="toggle-mode">Create an account</span>`
+            : `Have an account? <span class="link" id="toggle-mode">Sign In</span>`;
+        
+        document.getElementById('toggle-mode').onclick = () => toggleMode.click();
+        showMsg("", "");
+    });
+
+    authBtn.addEventListener('click', async () => {
+        const email = emailInput.value;
+        const password = passwordInput.value;
+        
+        if(!email || !password) return showMsg("Please fill in all fields.", "orange");
+
+        try {
+            if (isLoginMode) {
+                await signInWithEmailAndPassword(auth, email, password);
+                showMsg("Successfully signed in!", "green");
+                location.href = "console.html";
+            } else {
+                await createUserWithEmailAndPassword(auth, email, password);
+                showMsg("Account created! Welcome.", "green");
+                location.href = "console.html";
+            }
+        } catch (error) {
+            showMsg(error.message, "red");
+        }
+    });
+
+    forgotPw.addEventListener('click', async () => {
+        const email = emailInput.value;
+        if (!email) return showMsg("Enter your email address first.", "orange");
+
+        try {
+            await sendPasswordResetEmail(auth, email);
+            showMsg("Reset link sent! Check your email.", "green");
+        } catch (error) {
+            showMsg(error.message, "red");
+        }
+    });
+
+    const handleSocial = async (provider) => {
+        try {
+            const result = await signInWithPopup(auth, provider);
+            showMsg(`Hello, ${result.user.displayName || 'User'}!`, "green");
+            location.href = "console.html";
+        } catch (error) {
+            showMsg(error.message, "red");
+        }
+    };
+
+    document.getElementById('google-btn').onclick = () => handleSocial(googleProvider);
+    document.getElementById('github-btn').onclick = () => handleSocial(githubProvider);
+
+</script>
+</body>
+</html>

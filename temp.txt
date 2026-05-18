@@ -1,0 +1,2 @@
+const CLOUDINARY_CLOUD = 'dshqexmz3';
+const CLOUDINARY_PRESET = 'CodeCloud';

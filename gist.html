@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CodeCloud Gist</title>
+    <link rel="icon" href="CodeCloud.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet">
+    <style>
+        :root{--bg-void:#030508;--bg-deep:#080c12;--bg-surface:#0e1420;--bg-raised:#141c2e;--border-dim:#1e2d47;--border-mid:#263650;--border-bright:#2e4470;--text-primary:#dce8f5;--text-secondary:#6c8bab;--text-muted:#3d5470;--accent:#3b82f6;--accent-glow:rgba(59,130,246,0.15);--accent-bright:#60a5fa;--accent-dim:#1d4ed8;--success:#10b981;--danger:#ef4444;--mono:'Space Mono',monospace;--sans:'DM Sans',sans-serif;}
+        *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+        html,body{min-height:100%;font-family:var(--sans);background:var(--bg-void);color:var(--text-primary);}
+        ::-webkit-scrollbar{width:4px;height:4px;}::-webkit-scrollbar-track{background:transparent;}::-webkit-scrollbar-thumb{background:var(--border-mid);border-radius:2px;}
+        .navbar{height:52px;background:var(--bg-deep);border-bottom:1px solid var(--border-dim);display:flex;align-items:center;justify-content:space-between;padding:0 24px;position:sticky;top:0;z-index:10;}
+        .navbar::after{content:'';position:absolute;bottom:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--accent) 40%,var(--accent-bright) 60%,transparent);opacity:0.35;}
+        .brand{font-family:var(--mono);font-size:14px;font-weight:700;color:var(--text-primary);cursor:pointer;display:flex;align-items:center;gap:8px;text-decoration:none;}
+        .brand-icon{width:26px;height:26px;border-radius:6px;background:linear-gradient(135deg,#1d4ed8,#3b82f6);display:flex;align-items:center;justify-content:center;font-size:13px;box-shadow:0 0 12px var(--accent-glow);}
+        .brand-text span{color:var(--accent-bright);}
+        .nav-tag{font-family:var(--mono);font-size:10px;background:var(--bg-surface);border:1px solid var(--border-dim);color:var(--text-muted);padding:3px 10px;border-radius:20px;}
+        .container{max-width:860px;margin:0 auto;padding:40px 24px;}
+        .gist-header{margin-bottom:24px;}
+        .gist-meta{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:14px;}
+        .gist-author{font-family:var(--mono);font-size:12px;color:var(--text-secondary);}
+        .gist-date{font-family:var(--mono);font-size:11px;color:var(--text-muted);}
+        .gist-title{font-size:24px;font-weight:600;margin-bottom:8px;word-break:break-word;}
+        .gist-desc{font-size:14px;color:var(--text-secondary);line-height:1.6;}
+        .lang-badge{font-family:var(--mono);font-size:10px;font-weight:700;padding:2px 9px;border-radius:4px;text-transform:uppercase;letter-spacing:0.05em;}
+        .ext-js{background:rgba(245,158,11,0.15);color:#f59e0b;border:1px solid rgba(245,158,11,0.2);}
+        .ext-py{background:rgba(59,130,246,0.15);color:#60a5fa;border:1px solid rgba(59,130,246,0.2);}
+        .ext-html{background:rgba(249,115,22,0.15);color:#fb923c;border:1px solid rgba(249,115,22,0.2);}
+        .ext-css{background:rgba(139,92,246,0.15);color:#a78bfa;border:1px solid rgba(139,92,246,0.2);}
+        .ext-json{background:rgba(16,185,129,0.15);color:#34d399;border:1px solid rgba(16,185,129,0.2);}
+        .ext-md{background:rgba(156,163,175,0.15);color:#9ca3af;border:1px solid rgba(156,163,175,0.2);}
+        .ext-other{background:var(--bg-raised);color:var(--text-secondary);border:1px solid var(--border-dim);}
+        .code-wrap{background:var(--bg-deep);border:1px solid var(--border-dim);border-radius:10px;overflow:hidden;}
+        .code-toolbar{padding:10px 16px;background:var(--bg-raised);border-bottom:1px solid var(--border-dim);display:flex;justify-content:space-between;align-items:center;}
+        .code-filename{font-family:var(--mono);font-size:12px;color:var(--text-secondary);}
+        .btn-copy{padding:5px 14px;background:var(--accent);color:white;border:none;border-radius:6px;font-family:var(--sans);font-size:12px;font-weight:600;cursor:pointer;transition:all 0.15s;}
+        .btn-copy:hover{background:var(--accent-bright);}
+        .code-body{display:flex;overflow:auto;}
+        .line-nums{padding:16px 10px 16px 14px;color:var(--text-muted);user-select:none;text-align:right;font-family:var(--mono);font-size:12px;line-height:1.7;min-width:44px;border-right:1px solid var(--border-dim);flex-shrink:0;}
+        .code-text{flex:1;padding:16px;font-family:var(--mono);font-size:13px;line-height:1.7;color:var(--text-primary);white-space:pre;overflow:auto;}
+        .gist-actions{display:flex;gap:10px;margin-top:20px;}
+        .btn-action{padding:9px 18px;background:transparent;border:1px solid var(--border-mid);color:var(--text-secondary);border-radius:7px;font-family:var(--sans);font-size:13px;font-weight:500;cursor:pointer;transition:all 0.15s;text-decoration:none;display:flex;align-items:center;gap:6px;}
+        .btn-action:hover{color:var(--text-primary);border-color:var(--border-bright);background:var(--bg-raised);}
+        .state-msg{text-align:center;padding:80px 24px;font-family:var(--mono);font-size:13px;color:var(--text-muted);}
+        .state-big{font-size:36px;margin-bottom:12px;}
+        @keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+        .anim-in{animation:fadeIn 0.3s ease forwards;}
+        .stat-row{display:flex;gap:16px;margin-top:16px;}
+        .stat-pill{font-family:var(--mono);font-size:10px;color:var(--text-muted);background:var(--bg-surface);border:1px solid var(--border-dim);padding:3px 10px;border-radius:20px;}
+        .toast{position:fixed;bottom:24px;right:24px;background:var(--bg-raised);border:1px solid var(--border-mid);border-left:3px solid var(--success);border-radius:8px;padding:10px 16px;font-family:var(--mono);font-size:12px;color:var(--text-primary);box-shadow:0 8px 32px rgba(0,0,0,0.5);animation:fadeIn 0.2s ease;z-index:999;pointer-events:none;}
+    </style>
+</head>
+<body>
+<nav class="navbar">
+    <a class="brand" href="console.html">
+        <div class="brand-icon"><img src="Images/CodeCloud.png" alt="" style="height:16px;width:auto;" onerror="this.replaceWith(document.createTextNode('⌘'))"></div>
+        <div class="brand-text">Code<span>Cloud</span></div>
+    </a>
+    <div class="nav-tag">public gist</div>
+</nav>
+
+<div class="container" id="container">
+    <div class="state-msg"><div class="state-big">⟳</div>Loading gist...</div>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-app.js";
+import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-auth.js";
+import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-firestore.js";
+
+const app=initializeApp({apiKey:"AIzaSyCQLI6-YVviG3cS0vbmud4oco8oGV01ySg",authDomain:"codecloud-270fe.firebaseapp.com",projectId:"codecloud-270fe",storageBucket:"codecloud-270fe.firebasestorage.app",messagingSenderId:"155488205416",appId:"1:155488205416:web:a029e34bb4a3a1a63bd9dd"});
+const db=getFirestore(app);
+const auth=getAuth(app);
+const container=document.getElementById('container');
+
+function sanitize(str){const d=document.createElement('div');d.textContent=String(str||'');return d.innerHTML;}
+function getExt(name){const p=(name||'').split('.');return p.length>1?p.pop().toLowerCase():'';}
+function extClass(ext){const m={js:'ext-js',ts:'ext-js',jsx:'ext-js',tsx:'ext-js',py:'ext-py',html:'ext-html',css:'ext-css',scss:'ext-css',json:'ext-json',md:'ext-md',txt:'ext-md'};return m[ext]||'ext-other';}
+function formatDate(ts){if(!ts)return 'unknown date';const d=ts.toDate?ts.toDate():new Date(ts);return d.toLocaleDateString('en-US',{year:'numeric',month:'short',day:'numeric'});}
+function lineNums(code){return code.split('\n').map((_,i)=>i+1).join('\n');}
+
+function toast(msg){const t=document.createElement('div');t.className='toast';t.textContent=msg;document.body.appendChild(t);setTimeout(()=>t.remove(),2500);}
+
+const params=new URLSearchParams(window.location.search);
+const gistId=params.get('id');
+
+if(!gistId){
+    container.innerHTML=`<div class="state-msg"><div class="state-big">🔍</div>No gist ID provided.<br><br><a href="console.html" style="color:var(--accent-bright);font-family:var(--mono);">← Back to CodeCloud</a></div>`;
+} else {
+    (async()=>{
+        try{
+            try{ await signInAnonymously(auth); }catch(_){}
+            const snap=await getDoc(doc(db,'gists',gistId));
+            if(!snap.exists()){
+                container.innerHTML=`<div class="state-msg"><div class="state-big">🚫</div>This gist doesn't exist or has been deleted.<br><br><a href="console.html" style="color:var(--accent-bright);font-family:var(--mono);">← Back to CodeCloud</a></div>`;
+                return;
+            }
+            const g=snap.data();
+            const ext=getExt(g.fileName||g.title||'');
+            const code=g.code||'';
+            const lineCount=code.split('\n').length;
+
+            document.title=`${g.title||'Untitled'} — CodeCloud Gist`;
+
+            container.innerHTML='';
+            const wrap=document.createElement('div');
+            wrap.className='anim-in';
+
+            const header=document.createElement('div');
+            header.className='gist-header';
+
+            const metaRow=document.createElement('div');
+            metaRow.className='gist-meta';
+
+            const authorEl=document.createElement('span');
+            authorEl.className='gist-author';
+            authorEl.textContent=g.authorName||'Anonymous';
+            metaRow.appendChild(authorEl);
+
+            const dateEl=document.createElement('span');
+            dateEl.className='gist-date';
+            dateEl.textContent=formatDate(g.createdAt);
+            metaRow.appendChild(dateEl);
+
+            const badge=document.createElement('span');
+            badge.className=`lang-badge ${extClass(ext)}`;
+            badge.textContent=ext||'txt';
+            metaRow.appendChild(badge);
+
+            header.appendChild(metaRow);
+
+            const title=document.createElement('div');
+            title.className='gist-title';
+            title.textContent=g.title||'Untitled Gist';
+            header.appendChild(title);
+
+            if(g.description){
+                const desc=document.createElement('div');
+                desc.className='gist-desc';
+                desc.textContent=g.description;
+                header.appendChild(desc);
+            }
+
+            const statRow=document.createElement('div');
+            statRow.className='stat-row';
+            [{label:`${lineCount} lines`},{label:`${code.length} chars`},{label:'link-only access'}].forEach(s=>{
+                const pill=document.createElement('span');
+                pill.className='stat-pill';
+                pill.textContent=s.label;
+                statRow.appendChild(pill);
+            });
+            header.appendChild(statRow);
+
+            wrap.appendChild(header);
+
+            const codeWrap=document.createElement('div');
+            codeWrap.className='code-wrap';
+
+            const toolbar=document.createElement('div');
+            toolbar.className='code-toolbar';
+
+            const fname=document.createElement('span');
+            fname.className='code-filename';
+            fname.textContent=g.fileName||g.title||'snippet';
+            toolbar.appendChild(fname);
+
+            const copyBtn=document.createElement('button');
+            copyBtn.className='btn-copy';
+            copyBtn.textContent='Copy code';
+            copyBtn.onclick=()=>{
+                navigator.clipboard.writeText(code).then(()=>{
+                    copyBtn.textContent='✓ Copied!';
+                    toast('Copied to clipboard');
+                    setTimeout(()=>copyBtn.textContent='Copy code',2000);
+                }).catch(()=>{
+                    const ta=document.createElement('textarea');
+                    ta.value=code;ta.style.position='fixed';ta.style.opacity='0';
+                    document.body.appendChild(ta);ta.select();
+                    document.execCommand('copy');ta.remove();
+                    copyBtn.textContent='✓ Copied!';
+                    setTimeout(()=>copyBtn.textContent='Copy code',2000);
+                });
+            };
+            toolbar.appendChild(copyBtn);
+            codeWrap.appendChild(toolbar);
+
+            const codeBody=document.createElement('div');
+            codeBody.className='code-body';
+
+            const lnEl=document.createElement('div');
+            lnEl.className='line-nums';
+            lnEl.textContent=lineNums(code);
+
+            const codeEl=document.createElement('div');
+            codeEl.className='code-text';
+            codeEl.textContent=code;
+
+            codeBody.appendChild(lnEl);
+            codeBody.appendChild(codeEl);
+            codeWrap.appendChild(codeBody);
+            wrap.appendChild(codeWrap);
+
+            const actions=document.createElement('div');
+            actions.className='gist-actions';
+
+            const shareBtn=document.createElement('button');
+            shareBtn.className='btn-action';
+            shareBtn.innerHTML='🔗 Copy share link';
+            shareBtn.onclick=()=>{
+                navigator.clipboard.writeText(window.location.href);
+                toast('Share link copied!');
+                shareBtn.textContent='✓ Copied!';
+                setTimeout(()=>shareBtn.innerHTML='🔗 Copy share link',2000);
+            };
+            actions.appendChild(shareBtn);
+
+            const backBtn=document.createElement('a');
+            backBtn.className='btn-action';
+            backBtn.href='console.html';
+            backBtn.textContent='← Back to CodeCloud';
+            actions.appendChild(backBtn);
+
+            wrap.appendChild(actions);
+            container.appendChild(wrap);
+
+        }catch(err){
+            container.innerHTML=`<div class="state-msg"><div class="state-big">⚠</div>Failed to load gist.<br><span style="font-size:11px;color:var(--danger);">${sanitize(err.message)}</span><br><br><a href="console.html" style="color:var(--accent-bright);font-family:var(--mono);">← Back</a></div>`;
+        }
+    })();
+}
+</script>
+</body>
+</html>

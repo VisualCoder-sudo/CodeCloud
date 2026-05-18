@@ -1,0 +1,108 @@
+body {
+    background-color: rgb(29, 29, 29);
+    color: white;
+}
+
+.TopNavBar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 70px; /* Adjust height as needed */
+    display: flex;
+    align-items: center;
+    justify-content: space-between; /* Pushes Logo to left and Button to right */
+    padding: 0 2vw;
+    box-sizing: border-box;
+    background-color: rgb(29, 29, 29);
+}
+
+.Logo-Container {
+    display: flex;
+    align-items: center;
+}
+
+.Logo {
+    height: 2rem; /* Adjusted size */
+    margin-right: 10px;
+}
+
+.LogoTXT {
+    font-family: Arial;
+    color: steelblue;
+    font-size: 1.5rem;
+    margin: 0;
+}
+
+.Login-btn {
+    text-decoration: none;
+    font-family: Arial, sans-serif;
+    color: steelblue;
+    background-color: white;
+    padding: 10px 25px;
+    border-radius: 500px;
+    transition: 0.1s ease-in-out;
+}
+
+.Login-btn:hover {
+    background-color: steelblue;
+    color: white;
+}
+
+.Login-btn:active {
+    animation: LiquidGlassAnim 0.14s ease-in-out; 
+    transform: scale(1.2);
+    filter: brightness(1.3) contrast(1.1);
+}
+
+h1 {
+    font-family: Arial, Helvetica, sans-serif;
+    text-align: center;
+}
+
+p {
+    font-family: Arial, Helvetica, sans-serif;
+    text-align: center;
+}
+
+.GSB {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.GetStartedbtn {
+    margin: 20px auto;
+    text-decoration: none;
+    font-family: Arial, sans-serif;
+    color: steelblue;
+    background-color: white;
+    padding: 10px 25px;
+    border-radius: 500px;
+    transition: 0.1s ease-in-out;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.GetStartedbtn img {
+    height: 1.2rem;
+    width: auto;
+    display: block;
+}
+
+.GetStartedbtn:hover {
+    background-color: steelblue;
+    color: white;
+}
+
+@keyframes LiquidGlassAnim {
+  0%   { transform: scale(1); }
+  100% { transform: scale(1.2); }
+}
+
+.GetStartedbtn:active {
+    animation: LiquidGlassAnim 0.14s ease-in-out; 
+    transform: scale(1.2);
+    filter: brightness(1.3) contrast(1.1);
+}

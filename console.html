@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CodeCloud</title>
+    <link rel="icon" href="CodeCloud.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="console.css">
+</head>
+<body>
+<div id="auth-gate">
+    <div class="loading-brand">Code<span>Cloud</span></div>
+    <div class="loading-bar"><div class="loading-bar-fill"></div></div>
+</div>
+
+<div class="shell" id="app-shell" style="display:none;">
+    <div id="verify-banner">
+        ⚠ Your email is not verified.
+        <button class="verify-banner-link" onclick="resendVerification()">Resend verification email</button>
+        <span id="verify-banner-status" style="font-size:11px;opacity:0.7;"></span>
+    </div>
+    <header class="navbar">
+        <div class="brand" onclick="goHome()">
+            <div class="brand-icon"><img src="Images/CodeCloud.png" alt="" style="height:16px;width:auto;" onerror="this.replaceWith(document.createTextNode('⌘'))"></div>
+            <div class="brand-text">Code<span>Cloud</span></div>
+        </div>
+        <div class="nav-search-wrap">
+            <span class="nav-search-icon">⌕</span>
+            <input type="text" id="nav-search-input" class="nav-search-input" placeholder="Search users and public repos…" autocomplete="off" spellcheck="false">
+            <div class="search-results" id="search-results"></div>
+        </div>
+        <div class="nav-right">
+            <div class="dropdown-wrap">
+                <div class="avatar" id="nav-avatar" onclick="toggleDD()">U</div>
+                <div class="dropdown-menu" id="dd-menu">
+                    <div class="dd-header"><div class="dd-name" id="dd-name">?</div></div>
+                    <button class="dd-item" onclick="goHome();closeDD()"><img style="height:1rem;width:auto;" src="Images/Dashboard.png" alt=""> Dashboard</button>
+                    <button class="dd-item" onclick="openProfile();closeDD()"><img style="height:1rem;width:auto;" src="Images/Person.png" alt=""> Profile</button>
+                    <button class="dd-item" onclick="openGists();closeDD()"><img style="height:1rem;width:auto;" src="Images/Gists.png" alt=""> My Gists</button>
+                    <button class="dd-item" onclick="openSettings();closeDD()"><img style="height:1rem;width:auto;" src="Images/Settings.png" alt=""> Settings</button>
+                </div>
+            </div>
+        </div>
+    </header>
+    <div class="app-body">
+        <aside class="sidebar">
+            <div class="sidebar-top"><button class="btn-new-repo" id="btn-new-repo">＋ New Repository</button></div>
+            <div class="search-wrap"><input type="text" id="search-repo-input" class="search-input" placeholder="Filter repositories…"></div>
+            <div class="sidebar-section-label">Repositories</div>
+            <div class="repo-list" id="sidebar-repo-list"><div style="padding:20px 10px;text-align:center;color:var(--text-muted);font-family:var(--mono);font-size:11px;">Loading...</div></div>
+            <div id="sidebar-toggle-box" class="toggle-more-wrap" style="display:none;"></div>
+            <div class="sidebar-footer"><div class="sidebar-meta" id="repo-count-label">0 repositories</div></div>
+        </aside>
+        <main class="main-view" id="main-view"></main>
+    </div>
+</div>
+
+<div class="modal-backdrop" id="repo-modal" style="display:none;">
+    <div class="modal">
+        <div class="modal-title" id="repo-modal-title">Create Repository</div>
+        <div class="modal-sub" id="repo-modal-sub">Initialize a new cloud repository workspace.</div>
+        <div class="modal-form-group"><label class="modal-label">Name</label><input type="text" id="modal-repo-name" class="modal-input" placeholder="repository-name" autocomplete="off" spellcheck="false"></div>
+        <div id="repo-modal-extra" style="display:none;">
+            <div class="modal-form-group"><label class="modal-label" style="margin-top:4px;">Description (optional)</label><input type="text" id="modal-repo-desc" class="modal-input" placeholder="What is this repo about?" style="margin-top:6px;"></div>
+            <div class="toggle-row" style="margin-top:8px;">
+                <div><div class="toggle-label">Public repository</div><div class="toggle-desc">Anyone can view this repo and its files</div></div>
+                <label class="toggle-switch"><input type="checkbox" id="modal-repo-public"><span class="toggle-slider"></span></label>
+            </div>
+        </div>
+        <div class="modal-actions">
+            <button class="btn-modal-cancel" id="repo-modal-cancel">Cancel</button>
+            <button class="btn-modal-confirm" id="repo-modal-confirm">Create</button>
+        </div>
+    </div>
+</div>
+
+<div class="modal-backdrop" id="password-modal" style="display:none;">
+    <div class="modal">
+        <div class="modal-title" id="password-modal-title">Change Password</div>
+        <div class="modal-sub" id="password-modal-sub">Update your account password.</div>
+        <div class="modal-form-group"><label class="modal-label">Current Password</label><input type="password" id="current-password" class="modal-input" placeholder="Enter your current password"></div>
+        <div class="modal-form-group"><label class="modal-label">New Password</label><input type="password" id="new-password" class="modal-input" placeholder="Enter your new password"></div>
+        <div class="modal-form-group"><label class="modal-label">Confirm New Password</label><input type="password" id="confirm-new-password" class="modal-input" placeholder="Confirm your new password"></div>
+        <div class="modal-actions">
+            <button class="btn-modal-cancel" id="password-modal-cancel">Cancel</button>
+            <button class="btn-modal-confirm" id="password-modal-confirm">Change Password</button>
+        </div>
+    </div>
+</div>
+
+<div class="modal-backdrop" id="gist-modal" style="display:none;">
+    <div class="modal wide">
+        <div class="modal-title">New Gist</div>
+        <div class="modal-sub">Upload or paste code. Share via a private link.</div>
+        <div class="modal-form-group"><label class="modal-label">Title</label><input type="text" id="gist-title" class="modal-input" placeholder="My awesome snippet" spellcheck="false"></div>
+        <div class="modal-form-group"><label class="modal-label">Filename (with extension)</label><input type="text" id="gist-filename" class="modal-input" placeholder="example.js" spellcheck="false"></div>
+        <div class="modal-form-group"><label class="modal-label">Description (optional)</label><input type="text" id="gist-desc" class="modal-input" placeholder="What does this snippet do?"></div>
+        <div class="modal-form-group" style="margin-top:14px;"><label class="modal-label">Code</label><textarea id="gist-code" class="modal-textarea" placeholder="Paste your code here..."></textarea></div>
+        <div class="modal-or">— or upload a file —</div>
+        <div class="modal-form-group">
+            <input type="file" id="gist-file-input" hidden accept=".js,.ts,.jsx,.tsx,.py,.html,.css,.scss,.json,.txt,.md,.sh,.go,.rs,.java,.cpp,.c,.cs,.rb,.php,.sql,.yaml,.yml">
+            <button class="modal-file-btn" onclick="document.getElementById('gist-file-input').click()">↑ Choose file to upload</button>
+            <div id="gist-file-name" style="margin-top:6px;font-family:var(--mono);font-size:11px;color:var(--text-muted);"></div>
+        </div>
+        <div class="modal-actions">
+            <button class="btn-modal-cancel" id="gist-modal-cancel">Cancel</button>
+            <button class="btn-modal-confirm" id="gist-modal-confirm">Create Gist</button>
+        </div>
+    </div>
+</div>
+
+<div id="settings-layout">
+    <div class="settings-title">Account Settings</div>
+    <div class="settings-sub">Manage your profile and security.</div>
+    <div class="settings-section">
+        <div class="settings-section-title">👤 Profile</div>
+        <div class="form-group"><label class="form-label">Display Name</label><input type="text" id="s-name" class="form-input" placeholder="Your Name"></div>
+        <div class="form-group"><label class="form-label">Bio</label><input type="text" id="s-bio" class="form-input" placeholder="Tell us about yourself"></div>
+        <div class="form-group">
+            <label class="form-label">Handle <span style="font-size:10px;color:var(--text-muted);font-weight:400;text-transform:none;letter-spacing:0;">— letters, numbers, . _ - only</span></label>
+            <div class="handle-wrap"><input type="text" id="s-handle" class="form-input handle-input-with-status" placeholder="yourhandle" autocomplete="off" spellcheck="false" maxlength="20"><span class="handle-status" id="handle-status"></span></div>
+        </div>
+        <div class="form-group"><label class="form-label">Email</label><input class="form-input" disabled></div>
+        <button id="btn-save-profile" class="btn-save-settings">Save Profile</button>
+        <p id="profile-st" class="settings-status"></p>
+    </div>
+    <div class="settings-section">
+        <button id="open-pass-modal" class="btn-save-settings">Change Password</button>
+        <p id="pw-st" class="settings-status"></p>
+    </div>
+    <div class="settings-section danger-zone">
+        <button class="btn-danger" id="btn-logout-settings">Sign Out</button>
+    </div>
+</div>
+
+
+<div class="modal-backdrop" id="new-file-modal" style="display:none;">
+    <div class="modal">
+        <div class="modal-title">New File</div>
+        <div class="modal-sub">Create a blank file in this repository.</div>
+        <div class="modal-form-group">
+            <label class="modal-label">Filename</label>
+            <input type="text" id="new-file-name" class="modal-input" placeholder="e.g. index.js, styles.css, main.py" autocomplete="off" spellcheck="false">
+        </div>
+        <div class="modal-form-group" style="margin-top:2px;">
+            <label class="modal-label">Quick pick</label>
+            <div id="new-file-quickpick" style="display:flex;flex-wrap:wrap;gap:6px;margin-top:4px;"></div>
+        </div>
+        <div class="modal-actions">
+            <button class="btn-modal-cancel" id="new-file-cancel">Cancel</button>
+            <button class="btn-modal-confirm" id="new-file-confirm">Create File</button>
+        </div>
+    </div>
+</div>
+
+<script type="module" src="console.js"></script>
+</body>
+</html>
